@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Screening</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>AI Document Screening</h1>
+    <p>Module 1: Document Upload</p>
+
+    <label>Upload Document</label>
+    <input type="file" id="fileInput" accept="image/*">
+
+    <label>Document Type</label>
+    <select id="docType">
+      <option value="">Select document type</option>
+      <option value="Passport">Passport</option>
+      <option value="Visa">Visa</option>
+      <option value="Aadhaar">Aadhaar</option>
+      <option value="Driving License">Driving License</option>
+      <option value="Permit">Permit</option>
+    </select>
+
+    <div id="previewBox">
+      <img id="preview" alt="Document preview">
+    </div>
+
+    <button id="processBtn">Process Document</button>
+
+    <p id="status"></p>
+  </div>
+
+  <pre id="ocrResult"></pre>
+
+
+
+  <script src="script.js"></script>
+</body>
+</html>

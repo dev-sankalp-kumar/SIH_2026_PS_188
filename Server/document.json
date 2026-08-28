@@ -1,0 +1,27 @@
+{
+    "passports": [
+        {
+            "passport_number": "A1234567",
+            "name": "ARJUN KUMAR",
+            "nationality": "INDIAN",
+            "date_of_birth": "15/07/1985",
+            "gender": "M",
+            "date_of_issue": "20/08/2020",
+            "date_of_expiry": "19/08/2030",
+            "status": "ACTIVE"
+        }
+    ],
+
+    "visas": [
+        {
+            "visa_number": "68881179",
+            "name": "DELEA IOAN CONSTANTIN",
+            "visa_type": "R C1/D",
+            "entry_type": "M",
+            "valid_from": "12NOV2003",
+            "valid_until": "11NOV2008",
+            "stay_duration": "",
+            "status": "EXPIRED"
+        }
+    ]
+}
