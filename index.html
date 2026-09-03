@@ -3,41 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Screening</title>
+  <title>AI Document Screening</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <div class="container">
-    <h1>AI Document Screening</h1>
-    <p>Module 1: Document Upload</p>
+  <div class="app-wrapper">
+    <header class="header">
+      <h1>AI Document Screening</h1>
+      <p>Module 1: Document Upload</p>
+    </header>
 
-    <label>Upload Document</label>
-    <input type="file" id="fileInput" accept="image/*">
+    <div class="main-container">
+      <!-- Left Column: Upload Panel -->
+      <div class="upload-panel">
+        <div class="upload-box" id="dropZone">
+          <div class="upload-content">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <path d="M12 18v-6"></path>
+              <path d="M9 15l3-3 3 3"></path>
+            </svg>
+            <p>Drop or Click<br>to Upload</p>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" hidden>
+        </div>
 
-    <label>Document Type</label>
-    <select id="docType">
-      <option value="">Select document type</option>
-      <option value="Passport">Passport</option>
-      <option value="Visa">Visa</option>
-      <option value="Aadhaar">Aadhaar</option>
-      <option value="Driving License">Driving License</option>
-      <option value="Permit">Permit</option>
-    </select>
+        <div id="previewBox" style="display: none;">
+          <img id="preview" alt="Document preview">
+        </div>
 
-    <div id="previewBox">
-      <img id="preview" alt="Document preview">
+        <button id="processBtn">START PROCESSING</button>
+        <p id="status"></p>
+      </div>
+
+      <!-- Right Column: Document Types -->
+      <div class="doc-types-panel">
+        <button type="button" class="doc-btn" data-value="Passport">
+          <span class="icon">🛂</span> Passport
+        </button>
+        
+        <button type="button" class="doc-btn" data-value="Visa">
+          <span class="icon">📜</span> Visa
+        </button>
+        
+        <button type="button" class="doc-btn" data-value="Aadhaar">
+          <span class="icon">🪪</span> Aadhaar
+        </button>
+        
+        <button type="button" class="doc-btn active" data-value="Driving Licence">
+          <span class="icon">🛞</span> Driving Licence
+        </button>
+        
+        <button type="button" class="doc-btn" data-value="Permit">
+          <span class="icon">📄</span> Permit
+        </button>
+      </div>
     </div>
 
-    <button id="processBtn">Process Document</button>
-
-    <p id="status"></p>
+    <pre id="ocrResult"></pre>
   </div>
-
-  <pre id="ocrResult"></pre>
-
-
 
   <script src="script.js"></script>
 </body>
