@@ -1,249 +1,166 @@
+const dropZone = document.getElementById("dropZone");
 const fileInput = document.getElementById("fileInput");
-const docType = document.getElementById("docType");
 const preview = document.getElementById("preview");
+const previewBox = document.getElementById("previewBox");
 const processBtn = document.getElementById("processBtn");
 const status = document.getElementById("status");
 const ocrResult = document.getElementById("ocrResult");
+const docButtons = document.querySelectorAll(".doc-btn");
 
+// Store files and previews independently for each document type
+const documentData = {
+    "Passport": { file: null, previewUrl: "" },
+    "Visa": { file: null, previewUrl: "" },
+    "Aadhaar": { file: null, previewUrl: "" },
+    "Driving Licence": { file: null, previewUrl: "" },
+    "Permit": { file: null, previewUrl: "" }
+};
 
-// -----------------------------
-// Document preview
-// -----------------------------
-fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
+let currentDocType = "Driving Licence"; // Default active type
 
-    if (!file) {
-        preview.style.display = "none";
-        return;
-    }
-
-    const imageURL = URL.createObjectURL(file);
-
-    preview.src = imageURL;
-    preview.style.display = "block";
-
-    status.textContent = "Document uploaded.";
-    ocrResult.textContent = "";
+// Handle clicking the upload box to open file dialog
+dropZone.addEventListener("click", () => {
+    fileInput.click();
 });
 
+// Handle switching between document type buttons
+docButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        docButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        
+        currentDocType = button.getAttribute("data-value");
+        
+        // Restore the specific preview and status for this document type
+        const savedData = documentData[currentDocType];
+        if (savedData.file) {
+            preview.src = savedData.previewUrl;
+            previewBox.style.display = "block";
+            status.textContent = `${currentDocType} document loaded.`;
+            status.style.color = "#38bdf8";
+        } else {
+            preview.src = "";
+            previewBox.style.display = "none";
+            status.textContent = `Please upload your ${currentDocType}.`;
+            status.style.color = "#94a3b8";
+        }
+    });
+});
 
-// -----------------------------
-// Process document
-// -----------------------------
-processBtn.addEventListener("click", async () => {
+// Handle file selection and save it ONLY to the current active document type
+fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
-    const type = docType.value;
+    if (!file) return;
 
-    if (!file || !type) {
-        status.textContent = "Upload document and select type.";
+    const imageURL = URL.createObjectURL(file);
+    
+    // Save state for this specific document type
+    documentData[currentDocType].file = file;
+    documentData[currentDocType].previewUrl = imageURL;
+
+    // Update UI preview
+    preview.src = imageURL;
+    previewBox.style.display = "block";
+    status.textContent = `${currentDocType} uploaded successfully.`;
+    status.style.color = "#38bdf8";
+    
+    // Reset file input so selecting the same file again triggers change if needed
+    fileInput.value = "";
+});
+
+// Process the specific file tied to the currently selected document type
+processBtn.addEventListener("click", async () => {
+    const currentFile = documentData[currentDocType].file;
+
+    if (!currentFile) {
+        status.textContent = `Please upload a ${currentDocType} first.`;
+        status.style.color = "#f87171";
         return;
     }
 
-    processBtn.disabled = true;
-    processBtn.textContent = "Processing...";
-    status.textContent = "AI is analyzing the document...";
+    status.textContent = `Analyzing ${currentDocType}...`;
+    status.style.color = "#38bdf8";
     ocrResult.textContent = "";
 
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("document_type", type);
+    formData.append("file", currentFile);
+    formData.append("document_type", currentDocType);
 
     try {
-        // MODULE 1: AI extraction
-        const response = await fetch(
-            "http://127.0.0.1:8000/extract",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
+        const response = await fetch("http://127.0.0.1:8000/extract", {
+            method: "POST",
+            body: formData
+        });
 
-        const data = await getResponseData(response);
+        if (!response.ok) {
+            throw new Error("Extraction server error: " + response.status);
+        }
 
-        console.log("AI Extraction:", data);
+        const data = await response.json();
+        displayData(data, currentDocType);
 
-        // Show extracted information in the teammate's result area.
-        displayExtraction(data);
-
-        // MODULE 2: database validation
         status.textContent = "Verifying with central database...";
 
-        const validationResponse = await fetch(
-            "http://127.0.0.1:8000/validate",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            }
-        );
+        const validationResponse = await fetch("http://127.0.0.1:8000/validate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-        const validation = await getResponseData(validationResponse);
+        if (!validationResponse.ok) {
+            throw new Error("Validation server error: " + validationResponse.status);
+        }
 
-        console.log("Database Validation:", validation);
-
-        // Add verification information below extraction.
+        const validation = await validationResponse.json();
         displayValidation(validation);
-
-        status.textContent =
-            validation.document_status === "VERIFIED"
-                ? "Document verified successfully."
-                : "Verification completed. Review the result.";
+        status.textContent = "Verification completed.";
+        status.style.color = "#4ade80";
 
     } catch (error) {
-        console.error("Processing error:", error);
-        status.textContent = error.message || "Failed to process document.";
-        ocrResult.textContent =
-            "Unable to process the document.\n\n" +
-            "Check that the FastAPI server is running.";
-    } finally {
-        processBtn.disabled = false;
-        processBtn.textContent = "Process Document";
+        console.error("Error:", error);
+        status.textContent = `Failed to process document: ${error.message}`;
+        status.style.color = "#f87171";
     }
 });
 
-
-// -----------------------------
-// Read API response safely
-// -----------------------------
-async function getResponseData(response) {
-    const text = await response.text();
-
-    let data;
-
-    try {
-        data = JSON.parse(text);
-    } catch {
-        throw new Error(
-            `Server returned an invalid response (${response.status}).`
-        );
-    }
-
-    if (!response.ok) {
-        throw new Error(
-            data.detail || `Server error: ${response.status}`
-        );
-    }
-
-    return data;
-}
-
-
-// -----------------------------
-// MODULE 1 result
-// -----------------------------
-function displayExtraction(data) {
-    const labels = {
-        document_type: "Document Type",
-        name: "Name",
-        passport_number: "Passport No",
-        nationality: "Nationality",
-        date_of_birth: "DOB",
-        gender: "Gender",
-        date_of_issue: "Issue",
-        date_of_expiry: "Expiry",
-
-        visa_number: "Visa Number",
-        visa_type: "Visa Type",
-        entry_type: "Entry Type",
-        valid_from: "Valid From",
-        valid_until: "Valid Until",
-        stay_duration: "Stay Duration",
-
-        aadhaar_number: "Aadhaar Number",
-        license_number: "License Number",
-        vehicle_classes: "Vehicle Classes",
-        address: "Address",
-
-        permit_number: "Permit Number",
-        permit_type: "Permit Type",
-        issuing_authority: "Issuing Authority",
-        purpose: "Purpose"
-    };
-
-    let output = "EXTRACTED INFORMATION\n";
-    output += "============================\n\n";
-
+function displayData(data, type) {
+    ocrResult.textContent = `=== ${type.toUpperCase()} EXTRACTION ===\n`;
     for (const [key, value] of Object.entries(data)) {
-        const label = labels[key] || formatLabel(key);
-        output += `${label}: ${value || "—"}\n`;
+        const label = key
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, char => char.toUpperCase());
+        ocrResult.textContent += `${label}: ${value}\n`;
     }
-
-    ocrResult.textContent = output;
 }
 
-
-// -----------------------------
-// MODULE 2 result
-// -----------------------------
 function displayValidation(result) {
-    ocrResult.textContent +=
-        "\n\nDATABASE VERIFICATION\n" +
-        "============================\n\n";
-
-    ocrResult.textContent +=
-        `Database: ${result.database_status || "—"}\n`;
-
-    ocrResult.textContent +=
-        `Status: ${result.document_status || "—"}\n`;
-
-    if (result.document_number) {
-        ocrResult.textContent +=
-            `Document Number: ${result.document_number}\n`;
-    }
+    ocrResult.textContent += "\n============================\n";
+    ocrResult.textContent += "DATABASE VERIFICATION\n";
+    ocrResult.textContent += "============================\n\n";
+    ocrResult.textContent += `Database: ${result.database_status}\n`;
+    ocrResult.textContent += `Status: ${result.document_status}\n`;
 
     if (result.message) {
-        ocrResult.textContent +=
-            `Message: ${result.message}\n`;
+        ocrResult.textContent += `Message: ${result.message}\n`;
     }
 
-    if (
-        result.matches &&
-        Object.keys(result.matches).length > 0
-    ) {
-        ocrResult.textContent += "\nMATCHES\n";
-
+    if (result.matches && Object.keys(result.matches).length > 0) {
+        ocrResult.textContent += "\nMATCHES:\n";
         for (const [field, values] of Object.entries(result.matches)) {
-            ocrResult.textContent +=
-                `✓ ${formatLabel(field)}: ${values.extracted || "—"}\n`;
+            const label = field.replaceAll("_", " ");
+            ocrResult.textContent += `✓ ${label}: ${values.extracted}\n`;
         }
     }
 
-    if (
-        result.mismatches &&
-        Object.keys(result.mismatches).length > 0
-    ) {
-        ocrResult.textContent += "\nMISMATCHES\n";
-
+    if (result.mismatches && Object.keys(result.mismatches).length > 0) {
+        ocrResult.textContent += "\nMISMATCHES:\n";
         for (const [field, values] of Object.entries(result.mismatches)) {
-            ocrResult.textContent +=
-                `✗ ${formatLabel(field)}\n` +
-                `  Document: ${values.extracted || "—"}\n` +
-                `  Database: ${values.database || "—"}\n`;
+            const label = field.replaceAll("_", " ");
+            ocrResult.textContent += `✗ ${label}\n`;
+            ocrResult.textContent += `   Document: ${values.extracted}\n`;
+            ocrResult.textContent += `   Database: ${values.database}\n`;
         }
     }
-
-    if (
-        result.database_record &&
-        Object.keys(result.database_record).length > 0
-    ) {
-        ocrResult.textContent +=
-            "\nCENTRAL DATABASE RECORD\n";
-
-        for (const [field, value] of Object.entries(result.database_record)) {
-            ocrResult.textContent +=
-                `${formatLabel(field)}: ${value || "—"}\n`;
-        }
-    }
-}
-
-
-// -----------------------------
-// Utility
-// -----------------------------
-function formatLabel(key) {
-    return key
-        .replaceAll("_", " ")
-        .replace(/\b\w/g, char => char.toUpperCase());
 }
