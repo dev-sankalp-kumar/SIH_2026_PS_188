@@ -1,3 +1,5 @@
+const API_URL = "https://sih-2026-ps-188.onrender.com";
+
 const fileInput = document.getElementById("fileInput");
 let selectedDocumentType = "";
 const dropZone = document.getElementById("dropZone");
@@ -59,7 +61,7 @@ processBtn.addEventListener("click", async () => {
     try {
         // MODULE 1: AI extraction
         const response = await fetch(
-            "http://127.0.0.1:8000/extract",
+            `${API_URL}/extract`,
             {
                 method: "POST",
                 body: formData
@@ -77,7 +79,7 @@ processBtn.addEventListener("click", async () => {
         status.textContent = "Verifying with central database...";
 
         const validationResponse = await fetch(
-            "http://127.0.0.1:8000/validate",
+            `${API_URL}/validate`,
             {
                 method: "POST",
                 headers: {
