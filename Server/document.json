@@ -9,19 +9,108 @@
             "date_of_issue": "20/08/2020",
             "date_of_expiry": "19/08/2030",
             "status": "ACTIVE"
+        },
+        {
+            "passport_number": "X6337086",
+            "name": "ANIRUDH SINGH RATHORE",
+            "nationality": "INDIAN",
+            "date_of_birth": "01/07/2000",
+            "gender": "M",
+            "date_of_issue": "23/06/2023",
+            "date_of_expiry": "22/06/2033",
+            "status": "ACTIVE"
+        },
+        {
+            "passport_number": "J8369986",
+            "name": "SITA MAHA LAKSHMI RAMADUGULA",
+            "nationality": "INDIAN",
+            "date_of_birth": "23/09/1959",
+            "gender": "F",
+            "date_of_issue": "11/10/2011",
+            "date_of_expiry": "10/10/2021",
+            "status": "EXPIRED"
+        },
+        {
+            "passport_number": "U12N34567",
+            "name": "NOURA AL-NAIMI",
+            "nationality": "SYRIYA",
+            "date_of_birth": "11/12/1996",
+            "gender": "F",
+            "date_of_issue": "07/07/2019",
+            "date_of_expiry": "07/07/2024",
+            "status": "EXPIRED"
         }
     ],
-
     "visas": [
         {
             "visa_number": "68881179",
-            "name": "DELEA IOAN CONSTANTIN",
+            "name": "IOAN CONSTANTIN DELEA",
             "visa_type": "R C1/D",
             "entry_type": "M",
             "valid_from": "12NOV2003",
             "valid_until": "11NOV2008",
             "stay_duration": "",
-            "status": "EXPIRED"
+            "status": "EXPIRED",
+            "gender": "M"
+        },
+        {
+            "visa_number": "C6988939",
+            "name": "TRAM HOANG NGOC NGUYEN",
+            "visa_type": "R F1",
+            "entry_type": "M",
+            "valid_from": "22OCT2010",
+            "valid_until": "20OCT2011",
+            "stay_duration": "",
+            "status": "EXPIRED",
+            "gender": "F"
+        },
+        {
+            "visa_number": "L4608956",
+            "name": "GURDIP SINGH",
+            "visa_type": "R B1/B2",
+            "entry_type": "M",
+            "valid_from": "01SEP2016",
+            "valid_until": "29AUG2026",
+            "stay_duration": "",
+            "status": "EXPIRED",
+            "gender": "M"
+        },
+        {
+            "visa_number": "L2336637",
+            "name": "SAGAR SOLKHIYA",
+            "visa_type": "R C1/D",
+            "entry_type": "M",
+            "valid_from": "11APR2016",
+            "valid_until": "09OCT2017",
+            "stay_duration": "",
+            "status": "EXPIRED",
+            "gender": "M"
+        }
+    ],
+    "aadhar": [
+        {
+            "name": "SUKHBIR SINGH",
+            "date_of_birth": "05/02/1999",
+            "gender": "M",
+            "aadhar_numeber": "5313 3277 2911"
+        },
+        {
+            "name": "MAHENDAR SINGH",
+            "date_of_birth": "01/01/1988",
+            "gender": "M",
+            "aadhar_numeber": "7058 0479 5249"
+        },
+        {
+            "name": "MANJA MAKAR",
+            "date_of_birth": "28/07/1987",
+            "gender": "M",
+            "aadhar_numeber": "3735 8430 7653"
+        },
+        {
+            "name": "KOMAL VIJAY SAWANT",
+            "date_of_birth": "17/11/1991",
+            "gender": "F",
+            "aadhar_numeber": "5704 4395 3647"
         }
     ]
 }

@@ -18,7 +18,7 @@
       <!-- Left Column: Upload Panel -->
       <div class="upload-panel">
         <div class="upload-box" id="dropZone">
-          <div class="upload-content">
+          <div class="upload-content" id="uploadContent">
             <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -27,11 +27,10 @@
             </svg>
             <p>Drop or Click<br>to Upload</p>
           </div>
+          <div id="previewBox">
+            <img id="preview" alt="Document preview">
+          </div>
           <input type="file" id="fileInput" accept="image/*" hidden>
-        </div>
-
-        <div id="previewBox" style="display: none;">
-          <img id="preview" alt="Document preview">
         </div>
 
         <button id="processBtn">START PROCESSING</button>
