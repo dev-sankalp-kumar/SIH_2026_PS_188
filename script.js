@@ -12,9 +12,6 @@ const status = document.getElementById("status");
 const ocrResult = document.getElementById("ocrResult");
 
 
-// -----------------------------
-// Document preview
-// -----------------------------
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
 
@@ -36,9 +33,7 @@ fileInput.addEventListener("change", () => {
 });
 
 
-// -----------------------------
-// Process document
-// -----------------------------
+
 processBtn.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const type = selectedDocumentType;
@@ -59,7 +54,7 @@ processBtn.addEventListener("click", async () => {
     formData.append("document_type", type);
 
     try {
-        // MODULE 1: AI extraction
+      
         const response = await fetch(
             `${API_URL}/extract`,
             {
@@ -72,10 +67,10 @@ processBtn.addEventListener("click", async () => {
 
         console.log("AI Extraction:", data);
 
-        // Show extracted information in the teammate's result area.
+       
         displayExtraction(data);
 
-        // MODULE 2: database validation
+       
         status.textContent = "Verifying with central database...";
 
         const validationResponse = await fetch(
@@ -93,7 +88,7 @@ processBtn.addEventListener("click", async () => {
 
         console.log("Database Validation:", validation);
 
-        // Add verification information below extraction.
+     
         displayValidation(validation);
 
         status.textContent =
@@ -114,9 +109,7 @@ processBtn.addEventListener("click", async () => {
 });
 
 
-// -----------------------------
-// Read API response safely
-// -----------------------------
+
 async function getResponseData(response) {
     const text = await response.text();
 
@@ -140,9 +133,7 @@ async function getResponseData(response) {
 }
 
 
-// -----------------------------
-// MODULE 1 result
-// -----------------------------
+
 function displayExtraction(data) {
     const labels = {
         document_type: "Document Type",
@@ -185,9 +176,6 @@ function displayExtraction(data) {
 }
 
 
-// -----------------------------
-// MODULE 2 result
-// -----------------------------
 function displayValidation(result) {
     ocrResult.style.display = "block";
     ocrResult.textContent +=
@@ -251,19 +239,12 @@ function displayValidation(result) {
 }
 
 
-// -----------------------------
-// Utility
-// -----------------------------
 function formatLabel(key) {
     return key
         .replaceAll("_", " ")
         .replace(/\b\w/g, char => char.toUpperCase());
 }
 
-
-// -----------------------------
-// Document type selection
-// -----------------------------
 docButtons.forEach(button => {
     button.addEventListener("click", () => {
         docButtons.forEach(btn => btn.classList.remove("active"));
@@ -273,7 +254,7 @@ docButtons.forEach(button => {
     });
 });
 
-// Clicking the upload area opens the file picker.
+
 dropZone.addEventListener("click", () => {
     fileInput.click();
 });
